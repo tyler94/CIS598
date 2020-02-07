@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using CultEscape.Core;
+using CultEscape.Sprites;
 
 namespace CultEscape
 {
@@ -9,12 +12,19 @@ namespace CultEscape
     /// </summary>
     public class Game1 : Game
     {
-        Texture2D ballTexture;
-        Vector2 ballPosition;
-        float ballSpeed;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
+
+        private Camera _camera;
+
+        private List<Component> _components;
+
+        private Player _player;
+
+        public static int ScreenHeight;
+        public static int ScreenWidth;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -29,10 +39,8 @@ namespace CultEscape
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            ballPosition = new Vector2(graphics.PreferredBackBufferWidth / 2,
-            graphics.PreferredBackBufferHeight / 2);
-            ballSpeed = 150f;
+            ScreenHeight = graphics.PreferredBackBufferHeight;
+            ScreenWidth = graphics.PreferredBackBufferWidth;
 
             base.Initialize();
         }
@@ -47,7 +55,14 @@ namespace CultEscape
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            ballTexture = Content.Load<Texture2D>("ball");
+            _camera = new Camera();
+            _player = new Player(Content.Load<Texture2D>("ball"));
+
+            //the order things are in the _components list determines the order in which they are drawn
+            _components = new List<Component>()
+            {
+                _player
+            };
         }
 
         /// <summary>
@@ -70,31 +85,10 @@ namespace CultEscape
                 Exit();
 
             // TODO: Add your update logic here
-            var kstate = Keyboard.GetState();
+            foreach (var component in _components)
+                component.Update(gameTime);
 
-            if (kstate.IsKeyDown(Keys.Up))
-                ballPosition.Y -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (kstate.IsKeyDown(Keys.Down))
-                ballPosition.Y += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (kstate.IsKeyDown(Keys.Left))
-                ballPosition.X -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (kstate.IsKeyDown(Keys.Right))
-                ballPosition.X += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (ballPosition.X > graphics.PreferredBackBufferWidth - ballTexture.Width / 2)
-                ballPosition.X = graphics.PreferredBackBufferWidth - ballTexture.Width / 2;
-            else if (ballPosition.X < ballTexture.Width / 2)
-                ballPosition.X = ballTexture.Width / 2;
-
-            if (ballPosition.Y > graphics.PreferredBackBufferHeight - ballTexture.Height / 2)
-                ballPosition.Y = graphics.PreferredBackBufferHeight - ballTexture.Height / 2;
-            else if (ballPosition.Y < ballTexture.Height / 2)
-                ballPosition.Y = ballTexture.Height / 2;
-
-            base.Update(gameTime);
+            _camera.Follow(_player);
 
             base.Update(gameTime);
         }
@@ -108,8 +102,10 @@ namespace CultEscape
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
-            spriteBatch.Draw(
+            spriteBatch.Begin(transformMatrix: _camera.Transform);
+            foreach (var component in _components)
+                component.Draw(gameTime, spriteBatch);
+            /*spriteBatch.Draw(
                 ballTexture,
                 ballPosition,
                 null,
@@ -119,7 +115,7 @@ namespace CultEscape
                 Vector2.One,
                 SpriteEffects.None,
                 0f
-                );
+                );*/
             spriteBatch.End();
 
             base.Draw(gameTime);
