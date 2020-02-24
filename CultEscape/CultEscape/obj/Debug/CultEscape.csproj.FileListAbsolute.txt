@@ -1,5 +1,4 @@
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\MonoGame.Framework.dll.config
-C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\ball.xnb
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\x86\SDL2.dll
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\x64\SDL2.dll
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\x86\soft_oal.dll
@@ -10,7 +9,6 @@ C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\x
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\x64\libopenal.so.1
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\libSDL2-2.0.0.dylib
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\libopenal.1.dylib
-C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\CultEscape.exe.config
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\CultEscape.exe
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\CultEscape.pdb
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\MonoGame.Framework.dll
@@ -19,3 +17,14 @@ C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\obj\Debug\CultEscape.csproj.
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\obj\Debug\CultEscape.csproj.CopyComplete
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\obj\Debug\CultEscape.exe
 C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\obj\Debug\CultEscape.pdb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\ball.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\ghost.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\Protagonist.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\ProtagonistWalkDown.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\ProtagonistWalkLeft.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\ProtagonistWalkRight.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\ProtagonistWalkUp.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\Protagonist64WalkDown.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\Protagonist64WalkLeft.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\Protagonist64WalkRight.xnb
+C:\Users\Tyler\Desktop\CIS598\CultEscape\CultEscape\bin\DesktopGL\AnyCPU\Debug\Content\Protagonist64WalkUp.xnb

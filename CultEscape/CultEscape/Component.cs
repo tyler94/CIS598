@@ -12,5 +12,6 @@ namespace CultEscape
     {
         public abstract void Draw(GameTime gameTime, SpriteBatch spriteBatch);
         public abstract void Update(GameTime gameTime);
+        public abstract void UpdateEnemy(GameTime gameTime, Vector2 playerPos);
     }
 }
