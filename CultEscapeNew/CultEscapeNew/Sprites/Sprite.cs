@@ -78,13 +78,13 @@ namespace CultEscapeNew.Sprites
             _texture = texture;
         }
 
-        public virtual void Update(GameTime gameTime, List<Sprite> sprites, TiledMap map)
+        public virtual void Update(GameTime gameTime, List<Sprite> sprites, List<SolidTile> tiles)
         {
             _animationManager.Update(gameTime);
 
         }
 
-        public virtual void UpdateEnemy(GameTime gameTime, Vector2 playerPos, List<Sprite> sprites, List<Sprite> enemies, TiledMap map)
+        public virtual void UpdateEnemy(GameTime gameTime, Vector2 playerPos, List<Sprite> sprites, List<Sprite> enemies, List<SolidTile> tiles)
         {
 
         }
@@ -148,6 +148,38 @@ namespace CultEscapeNew.Sprites
         protected bool IsTouchingBottomAttack(Sprite sprite)
         {
             return Rectangle.Top - 16 + _velocity.Y < sprite.Rectangle.Bottom &&
+              Rectangle.Bottom > sprite.Rectangle.Bottom &&
+              Rectangle.Right > sprite.Rectangle.Left &&
+              Rectangle.Left < sprite.Rectangle.Right;
+        }
+
+        protected bool IsBlockedLeft(SolidTile sprite)
+        {
+            return Rectangle.Right + _velocity.X > sprite.Rectangle.Left &&
+              Rectangle.Left < sprite.Rectangle.Left &&
+              Rectangle.Bottom > sprite.Rectangle.Top &&
+              Rectangle.Top < sprite.Rectangle.Bottom;
+        }
+
+        protected bool IsBlockedRight(SolidTile sprite)
+        {
+            return Rectangle.Left + _velocity.X < sprite.Rectangle.Right &&
+              Rectangle.Right > sprite.Rectangle.Right &&
+              Rectangle.Bottom > sprite.Rectangle.Top &&
+              Rectangle.Top < sprite.Rectangle.Bottom;
+        }
+
+        protected bool IsBlockedTop(SolidTile sprite)
+        {
+            return Rectangle.Bottom + _velocity.Y > sprite.Rectangle.Top &&
+              Rectangle.Top < sprite.Rectangle.Top &&
+              Rectangle.Right > sprite.Rectangle.Left &&
+              Rectangle.Left < sprite.Rectangle.Right;
+        }
+
+        protected bool IsBlockedBottom(SolidTile sprite)
+        {
+            return Rectangle.Top + _velocity.Y < sprite.Rectangle.Bottom &&
               Rectangle.Bottom > sprite.Rectangle.Bottom &&
               Rectangle.Right > sprite.Rectangle.Left &&
               Rectangle.Left < sprite.Rectangle.Right;

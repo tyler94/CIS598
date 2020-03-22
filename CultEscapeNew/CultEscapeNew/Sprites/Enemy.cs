@@ -41,7 +41,7 @@ namespace CultEscapeNew.Sprites
 
         }
 
-        public override void UpdateEnemy(GameTime gameTime, Vector2 playerPos, List<Sprite> sprites, List<Sprite> enemies, TiledMap map)
+        public override void UpdateEnemy(GameTime gameTime, Vector2 playerPos, List<Sprite> sprites, List<Sprite> enemies, List<SolidTile> tiles)
         {
             //float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 

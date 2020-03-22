@@ -33,6 +33,8 @@ namespace CultEscapeNew
 
         private List<Sprite> _enemies;
 
+        private List<SolidTile> _tiles;
+
         private Player _player;
 
         private bool loadingEnemies = false;
@@ -68,10 +70,49 @@ namespace CultEscapeNew
             base.Initialize();
 
             map = Content.Load<TiledMap>("startingroom");
+
             // Create the map renderer
             //map.Tilesets[0].Tiles[0].Properties
             /*Tileset local identity = tilemap global identity - 1*/
             mapRenderer = new TiledMapRenderer(GraphicsDevice, map);
+
+
+            _tiles = new List<SolidTile>()
+            {
+            };
+
+            foreach (var tileLayer in map.TileLayers)
+            {
+
+                for (var x = 0; x < tileLayer.Width; x++)
+                {
+                    for (var y = 0; y < tileLayer.Height; y++)
+                    {
+                        var tile = tileLayer.GetTile((ushort)x, (ushort)y);
+                        var tileWidth = map.TileWidth;
+                        var tileHeight = map.TileHeight;
+
+                        SolidTile thisTile = new SolidTile();
+                        thisTile._position.X = x * tileWidth;
+                        thisTile._position.Y = y * tileHeight;
+
+
+                        if (tile.GlobalIdentifier == 19)
+                        {
+                            _tiles.Add(thisTile);
+                        }
+                        else if (tile.GlobalIdentifier == 14)
+                        {
+                            _tiles.Add(thisTile);
+                        }
+                        else if (tile.GlobalIdentifier == 15)
+                        {
+                            _tiles.Add(thisTile);
+                        }
+                    }
+                }
+            }
+
         }
 
         /// <summary>
@@ -108,6 +149,7 @@ namespace CultEscapeNew
             _player._position.X = 370;
             _player._position.Y = 205;
             _camera.Follow(_player);
+
 
             //the order things are in the _sprites list determines the order in which they are drawn
             _sprites = new List<Sprite>()
@@ -172,11 +214,11 @@ namespace CultEscapeNew
             {
 
                 foreach (var sprite in _sprites)
-                    sprite.Update(gameTime, _enemies, map);
+                    sprite.Update(gameTime, _enemies, _tiles);
 
                 foreach (var sprite in _enemies)
                 {
-                    sprite.UpdateEnemy(gameTime, _player.Position, _sprites, _enemies, map);
+                    sprite.UpdateEnemy(gameTime, _player.Position, _sprites, _enemies, _tiles);
                 }
 
                 //_camera.Follow(_player);

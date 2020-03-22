@@ -106,7 +106,7 @@ namespace CultEscapeNew.Sprites
 
 
 
-        public override void Update(GameTime gameTime, List<Sprite> sprites, TiledMap map)
+        public override void Update(GameTime gameTime, List<Sprite> sprites, List<SolidTile> tiles)
         {
             var speed = 3f;
 
@@ -247,17 +247,20 @@ namespace CultEscapeNew.Sprites
                 health--;
                 _velocity.Y = -100;
             }
-            TiledMap mapHolder = map;
-            TiledMapLayer layer = map.GetLayer("Tile Layer 1");
-            var tiles = map.GetTilesetByTileGlobalIdentifier(18); 
-            
-            /*foreach (var tile in tiles.Tiles)
+
+            foreach (var tile in tiles)
             {
+                if ((_velocity.X > 0 && IsBlockedLeft(tile)) ||
+                        (_velocity.X < 0 && IsBlockedRight(tile)))
+                    _velocity.X = 0;
 
-            }*/
+                if ((_velocity.Y > 0 && IsBlockedTop(tile)) ||
+                    (_velocity.Y < 0 && IsBlockedBottom(tile)))
+                    _velocity.Y = 0;
+            }
 
 
-                Position += _velocity;
+            Position += _velocity;
             _velocity = Vector2.Zero;
             hasBeenHitL = false;
             hasBeenHitR = false;
