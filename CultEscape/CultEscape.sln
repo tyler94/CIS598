@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CultEscape", "CultEscape\Cu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoGame.Extended", "..\..\MonoGame.Extended-develop\Source\MonoGame.Extended\MonoGame.Extended.csproj", "{A38D31DF-1904-4B09-95EC-0D3319F1C572}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameContentLib", "GameContentLib\GameContentLib.csproj", "{19F48FF7-C4B4-43CC-AF8A-04140A82C2EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A38D31DF-1904-4B09-95EC-0D3319F1C572}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A38D31DF-1904-4B09-95EC-0D3319F1C572}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A38D31DF-1904-4B09-95EC-0D3319F1C572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19F48FF7-C4B4-43CC-AF8A-04140A82C2EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19F48FF7-C4B4-43CC-AF8A-04140A82C2EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19F48FF7-C4B4-43CC-AF8A-04140A82C2EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19F48FF7-C4B4-43CC-AF8A-04140A82C2EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

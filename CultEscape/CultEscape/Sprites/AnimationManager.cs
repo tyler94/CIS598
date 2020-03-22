@@ -65,5 +65,10 @@ namespace CultEscape.Sprites
                     _animation.CurrentFrame = 1;
             }
         }
+
+        public int getCurrentFrame()
+        {
+            return _animation.CurrentFrame;
+        }
     }
 }
