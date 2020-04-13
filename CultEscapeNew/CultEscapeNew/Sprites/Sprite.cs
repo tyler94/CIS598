@@ -19,6 +19,8 @@ namespace CultEscapeNew.Sprites
         public Vector2 _position;
         public Vector2 _velocity;
 
+        public int health;
+
 
         public bool hasBeenHitL;
         public bool hasBeenHitR;

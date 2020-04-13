@@ -12,7 +12,6 @@ namespace CultEscapeNew.Sprites
 {
     public class Player : Sprite
     {//private Vector2 position;
-        protected int health;
         protected float speed;
         protected string Direction = "S";
 

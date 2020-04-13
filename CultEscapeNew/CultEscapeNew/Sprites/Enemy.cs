@@ -13,10 +13,10 @@ namespace CultEscapeNew.Sprites
     class Enemy : Sprite
     {
         //private Vector2 position;
-        protected int health;
         protected float speed;
         protected int radius;
         protected string Direction = "S";
+    
 
         protected int state;
 

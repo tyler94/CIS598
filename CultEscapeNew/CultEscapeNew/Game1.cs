@@ -21,8 +21,16 @@ namespace CultEscapeNew
 
         // The tile map
         private TiledMap map;
+        private List<TiledMap> level1maps;
+        private List<TiledMap> doors;
+        private List<TiledMap> activeDoors;
         // The renderer for the map
         private TiledMapRenderer mapRenderer;
+        private TiledMapRenderer leftDoorRenderer;
+        private TiledMapRenderer rightDoorRenderer;
+        private TiledMapRenderer topDoorRenderer;
+        private TiledMapRenderer bottomDoorRenderer;
+        private List<TiledMapRenderer> activeDoorRenderers;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -33,9 +41,17 @@ namespace CultEscapeNew
 
         private List<Sprite> _enemies;
 
+        private LevelGeneration _level;
+
         private List<SolidTile> _tiles;
 
         private Player _player;
+
+        private SpriteFont gameOverFont;
+
+        private Room currentRoom;
+
+        private Vector2 currentRoomPos;
 
         private bool loadingEnemies = false;
 
@@ -57,31 +73,50 @@ namespace CultEscapeNew
         /// </summary>
         protected override void Initialize()
         {
+            _level = new LevelGeneration();
             //graphics.PreferredBackBufferWidth = 500;  // set this value to the desired width of your window
             //graphics.PreferredBackBufferHeight = 500;   // set this value to the desired height of your window
             //graphics.ApplyChanges();
             ScreenHeight = graphics.PreferredBackBufferHeight;
             ScreenWidth = graphics.PreferredBackBufferWidth;
-            // Load the compiled map
-            //map = Content.Load<TiledMap>("tilemap1");
-            // Create the map renderer
-            //mapRenderer = new TiledMapRenderer(GraphicsDevice);
 
             base.Initialize();
 
-            map = Content.Load<TiledMap>("startingroom");
+            level1maps = new List<TiledMap>()
+            {
+                Content.Load<TiledMap>("startingroom"),
+                Content.Load<TiledMap>("room1"),
+                Content.Load<TiledMap>("room2"),
+                Content.Load<TiledMap>("room3"),
+                Content.Load<TiledMap>("room4"),
+                Content.Load<TiledMap>("room5"),
+            };
 
-            // Create the map renderer
-            //map.Tilesets[0].Tiles[0].Properties
-            /*Tileset local identity = tilemap global identity - 1*/
-            mapRenderer = new TiledMapRenderer(GraphicsDevice, map);
+            doors = new List<TiledMap>()
+            {
+                Content.Load<TiledMap>("doorleft"),
+                Content.Load<TiledMap>("doorright"),
+                Content.Load<TiledMap>("doortop"),
+                Content.Load<TiledMap>("doorbottom")
+            };
 
+            ResetRooms();
 
+            
+            CreateEnemies();
+            checkDoors();
+            //setTiles();
+            
+
+        }
+
+        protected void setTiles()
+        {
             _tiles = new List<SolidTile>()
             {
             };
 
-            foreach (var tileLayer in map.TileLayers)
+            foreach (var tileLayer in currentRoom.map.TileLayers)
             {
 
                 for (var x = 0; x < tileLayer.Width; x++)
@@ -89,8 +124,8 @@ namespace CultEscapeNew
                     for (var y = 0; y < tileLayer.Height; y++)
                     {
                         var tile = tileLayer.GetTile((ushort)x, (ushort)y);
-                        var tileWidth = map.TileWidth;
-                        var tileHeight = map.TileHeight;
+                        var tileWidth = currentRoom.map.TileWidth;
+                        var tileHeight = currentRoom.map.TileHeight;
 
                         SolidTile thisTile = new SolidTile();
                         thisTile._position.X = x * tileWidth;
@@ -109,10 +144,101 @@ namespace CultEscapeNew
                         {
                             _tiles.Add(thisTile);
                         }
+                        else if (tile.GlobalIdentifier == 2)
+                        {
+                            _tiles.Add(thisTile);
+                        }
                     }
                 }
             }
+            foreach (var door in activeDoors)
+            {
+                foreach (var tileLayer in door.TileLayers)
+                {
+                    for (var x = 0; x < tileLayer.Width; x++)
+                    {
+                        for (var y = 0; y < tileLayer.Height; y++)
+                        {
+                            var tile = tileLayer.GetTile((ushort)x, (ushort)y);
+                            var tileWidth = currentRoom.map.TileWidth;
+                            var tileHeight = currentRoom.map.TileHeight;
 
+                            SolidTile thisTile = new SolidTile();
+                            thisTile._position.X = x * tileWidth;
+                            thisTile._position.Y = y * tileHeight;
+
+
+                            if (tile.GlobalIdentifier == 19)
+                            {
+                                _tiles.Add(thisTile);
+                            }
+                            else if (tile.GlobalIdentifier == 14)
+                            {
+                                _tiles.Add(thisTile);
+                            }
+                            else if (tile.GlobalIdentifier == 15)
+                            {
+                                _tiles.Add(thisTile);
+                            }
+                            else if (tile.GlobalIdentifier == 2)
+                            {
+                                _tiles.Add(thisTile);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        protected void checkDoors()
+        {
+            activeDoors = new List<TiledMap>()
+                {
+                    doors[0],
+                    doors[1],
+                    doors[2],
+                    doors[3]
+                };
+            activeDoorRenderers = new List<TiledMapRenderer>()
+                {
+                    leftDoorRenderer,
+                    rightDoorRenderer,
+                    topDoorRenderer,
+                    bottomDoorRenderer
+                };
+            if (_enemies.Count > 0)
+            {
+                
+            }
+            else
+            {
+                if (currentRoom.doorLeft)
+                {
+                    activeDoors.Remove(doors[0]);
+                    activeDoorRenderers.Remove(leftDoorRenderer);
+                }
+
+                if (currentRoom.doorRight)
+                {
+                    activeDoors.Remove(doors[1]);
+                    activeDoorRenderers.Remove(rightDoorRenderer);
+                }
+
+                if (currentRoom.doorTop)
+                {
+                    activeDoors.Remove(doors[2]);
+                    activeDoorRenderers.Remove(topDoorRenderer);
+                }
+
+                if (currentRoom.doorBot)
+                {
+                    activeDoors.Remove(doors[3]);
+                    activeDoorRenderers.Remove(bottomDoorRenderer);
+                }
+            }
+                
+            setTiles();
+            
         }
 
         /// <summary>
@@ -124,32 +250,10 @@ namespace CultEscapeNew
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            gameOverFont = Content.Load<SpriteFont>("GameOver");
+            
             _camera = new Camera();
-            var playerAnimations = new Dictionary<string, Animation>()
-            {
-                {"WalkUp", new Animation(Content.Load<Texture2D>("Protagonist64WalkUp"), 3) },
-                {"WalkDown", new Animation(Content.Load<Texture2D>("Protagonist64WalkDown"), 3) },
-                {"WalkLeft", new Animation(Content.Load<Texture2D>("Protagonist64WalkLeft"), 3) },
-                {"WalkRight", new Animation(Content.Load<Texture2D>("Protagonist64WalkRight"), 3) },
-                {"AttackUp", new Animation(Content.Load<Texture2D>("Protagonist64AttackUp"), 4) },
-                {"AttackDown", new Animation(Content.Load<Texture2D>("Protagonist64AttackDown"), 4) },
-                {"AttackLeft", new Animation(Content.Load<Texture2D>("Protagonist64AttackLeft"), 4) },
-                {"AttackRight", new Animation(Content.Load<Texture2D>("Protagonist64AttackRight"), 4) }
-            };
-            /*var playerAnimations = new Dictionary<string, Animation>()
-            {
-                {"WalkUp", new Animation(Content.Load<Texture2D>("TestPlayer64"), 3) },
-                {"WalkDown", new Animation(Content.Load<Texture2D>("TestPlayer64"), 3) },
-                {"WalkLeft", new Animation(Content.Load<Texture2D>("TestPlayer64"), 3) },
-                {"WalkRight", new Animation(Content.Load<Texture2D>("TestPlayer64"), 3) }
-            };*/
-            _player = new Player(playerAnimations);
-            _player.isPlayer = true;
-            _player._position.X = 370;
-            _player._position.Y = 205;
-            _camera.Follow(_player);
-
+            ResetPlayer();
 
             //the order things are in the _sprites list determines the order in which they are drawn
             _sprites = new List<Sprite>()
@@ -171,6 +275,100 @@ namespace CultEscapeNew
             // TODO: Unload any non ContentManager content here
         }
 
+        protected void ResetPlayer()
+        {
+            var playerAnimations = new Dictionary<string, Animation>()
+            {
+                {"WalkUp", new Animation(Content.Load<Texture2D>("Protagonist64WalkUp"), 3) },
+                {"WalkDown", new Animation(Content.Load<Texture2D>("Protagonist64WalkDown"), 3) },
+                {"WalkLeft", new Animation(Content.Load<Texture2D>("Protagonist64WalkLeft"), 3) },
+                {"WalkRight", new Animation(Content.Load<Texture2D>("Protagonist64WalkRight"), 3) },
+                {"AttackUp", new Animation(Content.Load<Texture2D>("Protagonist64AttackUp"), 4) },
+                {"AttackDown", new Animation(Content.Load<Texture2D>("Protagonist64AttackDown"), 4) },
+                {"AttackLeft", new Animation(Content.Load<Texture2D>("Protagonist64AttackLeft"), 4) },
+                {"AttackRight", new Animation(Content.Load<Texture2D>("Protagonist64AttackRight"), 4) }
+            };
+            _player = new Player(playerAnimations);
+            _player.isPlayer = true;
+            _player._position.X = 370;
+            _player._position.Y = 205;
+            _camera.Follow(_player);
+        }
+
+        protected void ResetRooms()
+        {
+            activeDoorRenderers = new List<TiledMapRenderer>()
+            {
+            };
+            activeDoors = new List<TiledMap>()
+            {
+            };
+
+            currentRoomPos = new Vector2(4, 4);
+
+            _level.Start();
+
+            _level.rooms[(int)currentRoomPos.X, (int)currentRoomPos.Y].map = level1maps[0];
+
+            currentRoom = _level.rooms[(int)currentRoomPos.X, (int)currentRoomPos.Y];
+            Random random = new Random();
+
+            for (int i = 0; i < _level.rooms.GetLength(0); i++)
+            {
+                for (int j = 0; j < _level.rooms.GetLength(1); j++)
+                {
+                    if (i == 4 && j == 4)
+                    {
+                        //do nothing
+                    }
+                    else
+                    {
+                        if (_level.rooms[i, j] != null)
+                        {
+                            TiledMap tempMap = level1maps[(int)random.Next(1, level1maps.Count)];
+                            _level.rooms[i, j].map = tempMap;
+                        }
+
+                    }
+
+                }
+            }
+
+            /*Tileset local identity = tilemap global identity - 1*/
+            mapRenderer = new TiledMapRenderer(GraphicsDevice, currentRoom.map);
+            leftDoorRenderer = new TiledMapRenderer(GraphicsDevice, doors[0]);
+            rightDoorRenderer = new TiledMapRenderer(GraphicsDevice, doors[1]);
+            topDoorRenderer = new TiledMapRenderer(GraphicsDevice, doors[2]);
+            bottomDoorRenderer = new TiledMapRenderer(GraphicsDevice, doors[3]);
+        }
+
+        protected void CreateEnemies()
+        {
+            _enemies = new List<Sprite>()
+            {
+            };
+            Random random = new Random();
+            int randx, randy;
+            this.loadingEnemies = true;
+            int enemiesToSpawn = 3;
+            for (var i = 0; i < enemiesToSpawn; i++)
+            {
+                randx = random.Next(0, ScreenWidth);
+                randy = random.Next(0, ScreenHeight);
+                do
+                {
+                    randx = random.Next(0, ScreenWidth);
+                    randy = random.Next(0, ScreenHeight);
+                }
+                while (randx == _player.Position.X && randy == _player.Position.Y);
+                //Ghost newGhost = new Ghost(Content.Load<Texture2D>("ghost"));
+                Ghost newGhost = new Ghost(Content.Load<Texture2D>("ghost"));
+                newGhost.Position = new Vector2(randx, randy);
+                _enemies.Add(newGhost);
+            }
+            this.loadingEnemies = false;
+        }
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -178,50 +376,66 @@ namespace CultEscapeNew
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            mapRenderer.Update(gameTime);
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            //Load enemies when entering a new room
-            if (_enemies.Count == 0 && !loadingEnemies && _player.Position.X != 0)
+            if(_player.Health <= 0)
             {
-                Random random = new Random();
-                int randx, randy;
-                this.loadingEnemies = true;
-                //System.Threading.Thread.Sleep(1000);
-                //this.waves--;
-                //this.currentwave++;
-                int enemiesToSpawn = 3;
-                for (var i = 0; i < enemiesToSpawn; i++)
+                if (Keyboard.GetState().IsKeyDown(Keys.R))
                 {
-                    randx = random.Next(0, ScreenWidth);
-                    randy = random.Next(0, ScreenHeight);
-                    do
+                    ResetRooms();
+                    ResetPlayer();
+                    CreateEnemies();
+                    _sprites = new List<Sprite>()
                     {
-                        randx = random.Next(0, ScreenWidth);
-                        randy = random.Next(0, ScreenHeight);
-                    }
-                    while (randx == _player.Position.X && randy == _player.Position.Y);
-                    //Ghost newGhost = new Ghost(Content.Load<Texture2D>("ghost"));
-                    Ghost newGhost = new Ghost(Content.Load<Texture2D>("ghost"));
-                    newGhost.Position = new Vector2(randx, randy);
-                    _enemies.Add(newGhost);
-                }
-                this.loadingEnemies = false;
+                        _player
+                    };
+                    checkDoors();
+                    
 
+                    
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.Q))
+                {
+                    Exit();
+                }
             }
             else
             {
+                mapRenderer.Update(gameTime);
+                
 
-                foreach (var sprite in _sprites)
-                    sprite.Update(gameTime, _enemies, _tiles);
+                    if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    Exit();
 
-                foreach (var sprite in _enemies)
+                //Load enemies when entering a new room
+                if (_enemies.Count == 0 && !loadingEnemies && _player.Position.X != 0 && currentRoom.cleared == false)
                 {
-                    sprite.UpdateEnemy(gameTime, _player.Position, _sprites, _enemies, _tiles);
-                }
+                    currentRoom.cleared = true;
+                    checkDoors();
+                    //CreateEnemies();
 
-                //_camera.Follow(_player);
+                }
+                    foreach (var renderer in activeDoorRenderers.ToArray())
+                    {
+                        renderer.Update(gameTime);
+                    }
+
+                    foreach (var sprite in _sprites)
+                        sprite.Update(gameTime, _enemies, _tiles);
+
+                    foreach (var sprite in _enemies.ToArray())
+                    {
+                        if (sprite.health <= 0)
+                        {
+                            _enemies.Remove(sprite);
+                        }
+                        else
+                        {
+                            sprite.UpdateEnemy(gameTime, _player.Position, _sprites, _enemies, _tiles);
+
+                        }
+                    }
+                    //_camera.Follow(_player);
+
+                checkRoomTransition();
             }
 
             base.Update(gameTime);
@@ -233,33 +447,92 @@ namespace CultEscapeNew
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            //mapRenderer.Draw(map, _camera.Transform);
+            if (_player.Health <= 0)
+            {
+                GraphicsDevice.Clear(Color.Black);
+                spriteBatch.Begin(transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp);
+                spriteBatch.DrawString(gameOverFont, "You Died! Press 'R' to retry or 'Q' to quit", new Vector2(280, 205), Color.White);
+                spriteBatch.End();
+            }
+            else
+            {
+                GraphicsDevice.Clear(Color.CornflowerBlue);
+                //mapRenderer.Draw(map, _camera.Transform);
 
-            // TODO: Add your drawing code here
-            spriteBatch.Begin(transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp);
+                // TODO: Add your drawing code here
+                spriteBatch.Begin(transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp);
 
-            mapRenderer.Draw(_camera.Transform);
+                mapRenderer.Draw(_camera.Transform);
+                foreach (var renderer in activeDoorRenderers.ToArray())
+                {
+                    renderer.Draw(_camera.Transform);
+                }
 
-            foreach (var sprite in _sprites)
-                sprite.Draw(gameTime, spriteBatch);
+                foreach (var sprite in _sprites)
+                    sprite.Draw(gameTime, spriteBatch);
 
-            foreach (var sprite in _enemies)
-                sprite.Draw(gameTime, spriteBatch);
-            /*spriteBatch.Draw(
-                ballTexture,
-                ballPosition,
-                null,
-                Color.White,
-                0f,
-                new Vector2(ballTexture.Width / 2, ballTexture.Height / 2),
-                Vector2.One,
-                SpriteEffects.None,
-                0f
-                );*/
-            spriteBatch.End();
+                foreach (var sprite in _enemies)
+                    sprite.Draw(gameTime, spriteBatch);
+                spriteBatch.End();
+            }
+            
 
             base.Draw(gameTime);
+        }
+
+        protected void checkRoomTransition()
+        {
+            if(_player.Position.X > ScreenWidth)
+            {
+                currentRoomPos.X += 1;
+                changeRoom("right");
+            }
+            else if(_player.Position.X < 0)
+            {
+                currentRoomPos.X -= 1;
+                changeRoom("left");
+            }
+            else if(_player.Position.Y > ScreenHeight)
+            {
+                currentRoomPos.Y -= 1;
+                changeRoom("bottom");
+            }
+            else if(_player.Position.Y < 0)
+            {
+                currentRoomPos.Y += 1;
+                changeRoom("top");
+            }
+        }
+
+        protected void changeRoom(string doorEntered)
+        {
+            currentRoom = _level.rooms[(int)currentRoomPos.X, (int)currentRoomPos.Y];
+            switch (doorEntered)
+            {
+                case "right":
+                    _player._position.X = 15;
+                    break;
+                case "left":
+                    _player._position.X = ScreenWidth - 100;
+                    break;
+                case "top":
+                    _player._position.Y = ScreenHeight - 100;
+                    break;
+                case "bottom":
+                    _player._position.Y = 15;
+                    break;
+
+            }
+
+            /*Tileset local identity = tilemap global identity - 1*/
+            mapRenderer = new TiledMapRenderer(GraphicsDevice, currentRoom.map);
+            if (!currentRoom.cleared)
+            {
+                CreateEnemies();
+            }
+            
+            checkDoors();
+            //setTiles();
         }
     }
 }

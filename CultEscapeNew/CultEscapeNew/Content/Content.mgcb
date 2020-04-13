@@ -228,3 +228,55 @@
 /processor:TiledMapProcessor
 /build:startingroom.tmx
 
+#begin GameOver.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:GameOver.spritefont
+
+#begin doorbottom.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:doorbottom.tmx
+
+#begin doorleft.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:doorleft.tmx
+
+#begin doorright.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:doorright.tmx
+
+#begin doortop.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:doortop.tmx
+
+#begin room1.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:room1.tmx
+
+#begin room2.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:room2.tmx
+
+#begin room3.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:room3.tmx
+
+#begin room4.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:room4.tmx
+
+#begin room5.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:room5.tmx
+
