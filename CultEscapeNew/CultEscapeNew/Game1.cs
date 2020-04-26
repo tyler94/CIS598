@@ -37,6 +37,10 @@ namespace CultEscapeNew
 
         private Camera _camera;
 
+        private TextComponent _healthDisplay;
+
+        private TextComponent _roomCountDisplay;
+
         private List<Sprite> _sprites;
 
         private List<Sprite> _enemies;
@@ -47,13 +51,17 @@ namespace CultEscapeNew
 
         private Player _player;
 
-        private SpriteFont gameOverFont;
+        private SpriteFont gameFont;
 
         private Room currentRoom;
 
         private Vector2 currentRoomPos;
 
+        private int roomsRemaining;
+
         private bool loadingEnemies = false;
+
+        private bool start = false;
 
         public static int ScreenHeight;
         public static int ScreenWidth;
@@ -106,8 +114,13 @@ namespace CultEscapeNew
             CreateEnemies();
             checkDoors();
             //setTiles();
-            
+            _healthDisplay = new TextComponent("HP", new Vector2(5, 0), spriteBatch, gameFont, GraphicsDevice);
+            _healthDisplay.Update(_player.health.ToString(), Color.SpringGreen);
 
+            Vector2 stringDimensions = gameFont.MeasureString("HP" + ": " + _player.health.ToString());
+
+            _roomCountDisplay = new TextComponent("Remaining Rooms", new Vector2((int)stringDimensions.X + 20, 0), spriteBatch, gameFont, GraphicsDevice);
+            _roomCountDisplay.Update(roomsRemaining.ToString(), Color.SpringGreen);
         }
 
         protected void setTiles()
@@ -250,7 +263,7 @@ namespace CultEscapeNew
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            gameOverFont = Content.Load<SpriteFont>("GameOver");
+            gameFont = Content.Load<SpriteFont>("GameOver");
             
             _camera = new Camera();
             ResetPlayer();
@@ -312,6 +325,7 @@ namespace CultEscapeNew
 
             currentRoom = _level.rooms[(int)currentRoomPos.X, (int)currentRoomPos.Y];
             Random random = new Random();
+            roomsRemaining = 1;
 
             for (int i = 0; i < _level.rooms.GetLength(0); i++)
             {
@@ -327,6 +341,7 @@ namespace CultEscapeNew
                         {
                             TiledMap tempMap = level1maps[(int)random.Next(1, level1maps.Count)];
                             _level.rooms[i, j].map = tempMap;
+                            roomsRemaining++;
                         }
 
                     }
@@ -376,7 +391,18 @@ namespace CultEscapeNew
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if(_player.Health <= 0)
+            if (!start)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                {
+                    start = true;
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.Q))
+                {
+                    Exit();
+                }
+            }
+            else if(_player.Health <= 0 || roomsRemaining == 0)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.R))
                 {
@@ -409,6 +435,7 @@ namespace CultEscapeNew
                 if (_enemies.Count == 0 && !loadingEnemies && _player.Position.X != 0 && currentRoom.cleared == false)
                 {
                     currentRoom.cleared = true;
+                    roomsRemaining--;
                     checkDoors();
                     //CreateEnemies();
 
@@ -436,6 +463,8 @@ namespace CultEscapeNew
                     //_camera.Follow(_player);
 
                 checkRoomTransition();
+                _healthDisplay.Update(_player.health.ToString(), Color.SpringGreen);
+                _roomCountDisplay.Update(roomsRemaining.ToString(), Color.SpringGreen);
             }
 
             base.Update(gameTime);
@@ -447,11 +476,34 @@ namespace CultEscapeNew
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            if (_player.Health <= 0)
+            if (!start)
             {
                 GraphicsDevice.Clear(Color.Black);
                 spriteBatch.Begin(transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp);
-                spriteBatch.DrawString(gameOverFont, "You Died! Press 'R' to retry or 'Q' to quit", new Vector2(280, 205), Color.White);
+                spriteBatch.DrawString(gameFont, "WELCOME", new Vector2(360, 10), Color.SpringGreen);
+                spriteBatch.DrawString(gameFont, "Carrie awakens in a strange place", new Vector2(295, 150), Color.MediumPurple);
+                spriteBatch.DrawString(gameFont, "Cursed Jack-o'-lanterns observe her as she gets her bearings", new Vector2(220, 170), Color.MediumPurple);
+                spriteBatch.DrawString(gameFont, "Suddenly she is attacked by the damned souls of an old forgotten cult", new Vector2(200, 190), Color.MediumPurple);
+                spriteBatch.DrawString(gameFont, "Help Carrie escape by banishing the angry spirits", new Vector2(250, 210), Color.MediumPurple);
+                spriteBatch.DrawString(gameFont, "Use the arrow keys to move and attack with 'Space'", new Vector2(250, 400), Color.MediumPurple);
+                spriteBatch.DrawString(gameFont, "Press 'Enter' to Start or 'Q' to quit", new Vector2(295, 420), Color.MediumPurple);
+                spriteBatch.End();
+            }
+            else if (_player.Health <= 0)
+            {
+                GraphicsDevice.Clear(Color.Black);
+                spriteBatch.Begin(transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp);
+                spriteBatch.DrawString(gameFont, "YOU DIED!", new Vector2(360, 180), Color.Red);
+                spriteBatch.DrawString(gameFont, "Press 'R' to Retry or 'Q' to quit", new Vector2(295, 205), Color.Red);
+                spriteBatch.End();
+            }
+            else if (roomsRemaining == 0)
+            {
+                GraphicsDevice.Clear(Color.Black);
+                spriteBatch.Begin(transformMatrix: _camera.Transform, samplerState: SamplerState.PointClamp);
+                spriteBatch.DrawString(gameFont, "CONGRATULATIONS!", new Vector2(320, 180), Color.SpringGreen);
+                spriteBatch.DrawString(gameFont, "You banished the disgruntled spirits!", new Vector2(270, 205), Color.MediumPurple);
+                spriteBatch.DrawString(gameFont, "Press 'R' to Reset or 'Q' to quit", new Vector2(295, 230), Color.MediumPurple);
                 spriteBatch.End();
             }
             else
@@ -473,9 +525,10 @@ namespace CultEscapeNew
 
                 foreach (var sprite in _enemies)
                     sprite.Draw(gameTime, spriteBatch);
+                _healthDisplay.Draw();
+                _roomCountDisplay.Draw();
                 spriteBatch.End();
             }
-            
 
             base.Draw(gameTime);
         }

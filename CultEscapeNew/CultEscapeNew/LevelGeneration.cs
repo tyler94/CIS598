@@ -17,12 +17,13 @@ namespace CultEscapeNew
         Vector2 worldSize = new Vector2(4, 4);
         public Room[,] rooms;
         List<Vector2> takenPositions = new List<Vector2>();
-        int gridSizeX, gridSizeY, numberOfRooms = 20;
+        int gridSizeX, gridSizeY, numberOfRooms = 5;
         //public GameObject roomWhiteObj;
         //public Transform mapRoot;
 
         public void Start()
         {
+            takenPositions = new List<Vector2>();
             if (numberOfRooms >= (worldSize.X * 2) * (worldSize.Y * 2))
             { // make sure we dont try to make more rooms than can fit in our grid
                 numberOfRooms = (int)((worldSize.X * 2) * (worldSize.Y * 2));
@@ -40,6 +41,7 @@ namespace CultEscapeNew
         }
         void CreateRooms()
         {
+            takenPositions = new List<Vector2>();
             //setup
             rooms = new Room[gridSizeX * 2, gridSizeY * 2];
             //center, starting room
@@ -79,10 +81,10 @@ namespace CultEscapeNew
         {
             int x = 0, y = 0;
             Vector2 checkingPos = Vector2.Zero;
+            Random random = new Random();
+            double rand;
             do
             {
-                Random random = new Random();
-                double rand;
                 rand = random.NextDouble();
                 int index = (int)(rand * (takenPositions.Count - 1)); // pick a random room
                 x = (int)takenPositions[index].X;//capture its x, y position

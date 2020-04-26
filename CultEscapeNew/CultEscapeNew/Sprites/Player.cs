@@ -17,6 +17,10 @@ namespace CultEscapeNew.Sprites
 
         protected int state;
 
+        protected int recoveryTime;
+
+        protected bool inRecovery = false;
+
         protected enum attackState { NotAttacking, Attacking, AttackHeldDown, AttackReleased };
 
         protected attackState myAttackState;
@@ -226,26 +230,43 @@ namespace CultEscapeNew.Sprites
                 }
             }
 
-            if (this.hasBeenHitL == true)
+            if(inRecovery == false)
             {
-                health--;
-                _velocity.X = -100;
+                if (this.hasBeenHitL == true)
+                {
+                    health--;
+                    _velocity.X = -100;
+                    inRecovery = true;
+                }
+                else if (this.hasBeenHitR == true)
+                {
+                    health--;
+                    _velocity.X = 100;
+                    inRecovery = true;
+                }
+                else if (this.hasBeenHitU == true)
+                {
+                    health--;
+                    _velocity.Y = 100;
+                    inRecovery = true;
+                }
+                else if (this.hasBeenHitD == true)
+                {
+                    health--;
+                    _velocity.Y = -100;
+                    inRecovery = true;
+                }
             }
-            else if (this.hasBeenHitR == true)
+            else
             {
-                health--;
-                _velocity.X = 100;
+                recoveryTime += gameTime.ElapsedGameTime.Milliseconds;
+                if(recoveryTime >= 5000)
+                {
+                    inRecovery = false;
+                    recoveryTime = 0;
+                }
             }
-            else if (this.hasBeenHitU == true)
-            {
-                health--;
-                _velocity.Y = 100;
-            }
-            else if (this.hasBeenHitD == true)
-            {
-                health--;
-                _velocity.Y = -100;
-            }
+            
 
             foreach (var tile in tiles)
             {
