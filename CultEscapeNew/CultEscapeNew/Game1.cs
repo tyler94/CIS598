@@ -45,6 +45,8 @@ namespace CultEscapeNew
 
         private List<Sprite> _enemies;
 
+        private PowerUp powerUp;
+
         private LevelGeneration _level;
 
         private List<SolidTile> _tiles;
@@ -62,6 +64,10 @@ namespace CultEscapeNew
         private bool loadingEnemies = false;
 
         private bool start = false;
+
+        private bool renderPowerUp = false;
+
+        private List<Texture2D> _fireballTextures;
 
         public static int ScreenHeight;
         public static int ScreenWidth;
@@ -108,6 +114,15 @@ namespace CultEscapeNew
                 Content.Load<TiledMap>("doorbottom")
             };
 
+            _fireballTextures = new List<Texture2D>()
+            {
+                Content.Load<Texture2D>("FireballLeft"),
+                Content.Load<Texture2D>("FireballRight"),
+                Content.Load<Texture2D>("FireballUp"),
+                Content.Load<Texture2D>("FireballDown"),
+            };
+            _player._fireballTextures = _fireballTextures;
+
             ResetRooms();
 
             
@@ -123,6 +138,7 @@ namespace CultEscapeNew
             _roomCountDisplay.Update(roomsRemaining.ToString(), Color.SpringGreen);
         }
 
+        /*goes through tilemap tiles, finds tiles that should be solid, then adds them to a list of tiles to be checked for collision*/
         protected void setTiles()
         {
             _tiles = new List<SolidTile>()
@@ -203,6 +219,7 @@ namespace CultEscapeNew
             }
         }
 
+        /*open doors when all enemies in a room have eliminated*/
         protected void checkDoors()
         {
             activeDoors = new List<TiledMap>()
@@ -305,9 +322,11 @@ namespace CultEscapeNew
             _player.isPlayer = true;
             _player._position.X = 370;
             _player._position.Y = 205;
+            _player._fireballTextures = _fireballTextures;
             _camera.Follow(_player);
         }
 
+        /*Generate the level layout and assign tilemaps to the rooms*/
         protected void ResetRooms()
         {
             activeDoorRenderers = new List<TiledMapRenderer>()
@@ -333,13 +352,36 @@ namespace CultEscapeNew
                 {
                     if (i == 4 && j == 4)
                     {
-                        //do nothing
+                        int powerUpChance = random.Next(0, 3);
+                        if (powerUpChance == 0)
+                        {
+                            _level.rooms[i, j].hasPowerUp = false;
+                        }
+                        else
+                        {
+                            _level.rooms[i, j].hasPowerUp = true;
+                        }
                     }
                     else
                     {
                         if (_level.rooms[i, j] != null)
                         {
-                            TiledMap tempMap = level1maps[(int)random.Next(1, level1maps.Count)];
+                            int roomType = (int)random.Next(1, level1maps.Count);
+                            //determine whether eligible rooms will have a powerup
+                            if (roomType == 3 || roomType == 4 || roomType == 5)
+                            {
+                                int powerUpChance = random.Next(0,3);
+                                if(powerUpChance == 0)
+                                {
+                                    _level.rooms[i, j].hasPowerUp = false;
+                                }
+                                else
+                                {
+                                    _level.rooms[i, j].hasPowerUp = true;
+                                }
+                             
+                            }
+                            TiledMap tempMap = level1maps[roomType];
                             _level.rooms[i, j].map = tempMap;
                             roomsRemaining++;
                         }
@@ -357,6 +399,7 @@ namespace CultEscapeNew
             bottomDoorRenderer = new TiledMapRenderer(GraphicsDevice, doors[3]);
         }
 
+        /*create enemies and set their positions so that they are not on top of the player*/
         protected void CreateEnemies()
         {
             _enemies = new List<Sprite>()
@@ -375,7 +418,7 @@ namespace CultEscapeNew
                     randx = random.Next(0, ScreenWidth);
                     randy = random.Next(0, ScreenHeight);
                 }
-                while (randx == _player.Position.X && randy == _player.Position.Y);
+                while (Math.Abs(randx - _player.Position.X) < 200 && Math.Abs(randy - _player.Position.Y) < 200);
                 //Ghost newGhost = new Ghost(Content.Load<Texture2D>("ghost"));
                 Ghost newGhost = new Ghost(Content.Load<Texture2D>("ghost"));
                 newGhost.Position = new Vector2(randx, randy);
@@ -435,6 +478,11 @@ namespace CultEscapeNew
                 if (_enemies.Count == 0 && !loadingEnemies && _player.Position.X != 0 && currentRoom.cleared == false)
                 {
                     currentRoom.cleared = true;
+                    if(currentRoom.hasPowerUp && _player.poweredUp == false)
+                    {
+                        powerUp = new PowerUp(Content.Load<Texture2D>("powerUp"));
+                        powerUp.Position = new Vector2(370, 205);
+                    }
                     roomsRemaining--;
                     checkDoors();
                     //CreateEnemies();
@@ -458,6 +506,17 @@ namespace CultEscapeNew
                         {
                             sprite.UpdateEnemy(gameTime, _player.Position, _sprites, _enemies, _tiles);
 
+                        }
+                    }
+                    
+                    if(powerUp != null)
+                    {
+
+                        powerUp.Update(gameTime, _player);
+                        if (powerUp.hasBeenTouched)
+                        {
+                            powerUp = null;
+                            _player.poweredUp = true;
                         }
                     }
                     //_camera.Follow(_player);
@@ -525,14 +584,18 @@ namespace CultEscapeNew
 
                 foreach (var sprite in _enemies)
                     sprite.Draw(gameTime, spriteBatch);
+                if(powerUp != null)
+                {
+                    powerUp.Draw(gameTime, spriteBatch);
+                }
                 _healthDisplay.Draw();
                 _roomCountDisplay.Draw();
                 spriteBatch.End();
             }
-
             base.Draw(gameTime);
         }
 
+        /*check if the player has exited the room*/
         protected void checkRoomTransition()
         {
             if(_player.Position.X > ScreenWidth)
@@ -557,6 +620,7 @@ namespace CultEscapeNew
             }
         }
 
+        /*if player exited room, change current room and set player position to the correct entrance of the new room*/
         protected void changeRoom(string doorEntered)
         {
             currentRoom = _level.rooms[(int)currentRoomPos.X, (int)currentRoomPos.Y];

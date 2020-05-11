@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonoGame.Extended.Tiled;
+using CultEscapeNew;
 
 namespace CultEscapeNew.Sprites
 {
@@ -25,6 +26,12 @@ namespace CultEscapeNew.Sprites
 
         protected attackState myAttackState;
 
+        private List<Fireball> _fireballs;
+
+        public List<Texture2D> _fireballTextures;
+
+        public bool poweredUp = false;
+
         public int Health
         {
             get { return health; }
@@ -38,6 +45,7 @@ namespace CultEscapeNew.Sprites
             _animationManager = new AnimationManager(_animations.First().Value);
             speed = 3f;
             health = 4;
+            _fireballs = new List<Fireball>();
 
             myAttackState = attackState.NotAttacking;
         }
@@ -59,6 +67,25 @@ namespace CultEscapeNew.Sprites
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                     {
                         myAttackState = attackState.Attacking;
+                        if (poweredUp)
+                        {
+                            switch (Direction)
+                            {
+                                case "N":
+                                    _fireballs.Add(new Fireball(_fireballTextures[2], "N", new Vector2(Position.X+15, Position.Y-30)));
+                                    break;
+                                case "S":
+                                    _fireballs.Add(new Fireball(_fireballTextures[3], "S", new Vector2(Position.X+15, Position.Y + 50)));
+                                    break;
+                                case "W":
+                                    _fireballs.Add(new Fireball(_fireballTextures[0], "W", new Vector2(Position.X-10, Position.Y+15)));
+                                    break;
+                                case "E":
+                                    _fireballs.Add(new Fireball(_fireballTextures[1], "E", new Vector2(Position.X+50, Position.Y+15)));
+                                    break;
+                            }
+                            
+                        }
                     }
                     break;
                 case attackState.Attacking:
@@ -185,7 +212,18 @@ namespace CultEscapeNew.Sprites
             }
 
 
-
+            if(_fireballs.Count > 0)
+            {
+                foreach (var fireball in _fireballs.ToArray())
+                {
+                    fireball.Update(gameTime, tiles, sprites);
+                    if (fireball.hasCollided)
+                    {
+                        _fireballs.Remove(fireball);
+                    }
+                }
+            }
+            
 
             foreach (var sprite in sprites)
             {
@@ -292,13 +330,11 @@ namespace CultEscapeNew.Sprites
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             _animationManager.Draw(spriteBatch);
-            /*switch (Direction)
-            {
-                case "S":
-                    spriteBatch.Draw(_texture, Position, new Rectangle(32, 0, 32, 32), Color.White);
-                    break;
-            }*/
 
+            foreach(Fireball fireball in _fireballs)
+            {
+                fireball.Draw(gameTime, spriteBatch);
+            }
         }
 
     }

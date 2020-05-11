@@ -18,6 +18,7 @@ namespace CultEscapeNew
         public bool doorTop, doorBot, doorLeft, doorRight;
         public TiledMap map;
         public bool cleared = false;
+        public bool hasPowerUp = false;
 
         public Room(Vector2 _gridPos, int _type) {
             gridPos = _gridPos;

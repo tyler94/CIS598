@@ -86,15 +86,15 @@ namespace CultEscapeNew
             do
             {
                 rand = random.NextDouble();
-                int index = (int)(rand * (takenPositions.Count - 1)); // pick a random room
-                x = (int)takenPositions[index].X;//capture its x, y position
+                int index = (int)(rand * (takenPositions.Count - 1)); // pick an existing room
+                x = (int)takenPositions[index].X;
                 y = (int)takenPositions[index].Y;
                 rand = random.NextDouble();
-                bool UpDown = (rand < 0.5f);//randomly pick wether to look on hor or vert axis
+                bool UpDown = (rand < 0.5f);//randomly pick wether to look on horizontal or vertical axis
                 rand = random.NextDouble();
                 bool positive = (rand < 0.5f);//pick whether to be positive or negative on that axis
                 if (UpDown)
-                { //find the position bnased on the above bools
+                { //find the position based on the above bools
                     if (positive)
                     {
                         y += 1;
@@ -202,27 +202,6 @@ namespace CultEscapeNew
             }
             return ret;
         }
-        /*void DrawMap()
-        {
-            foreach (Room room in rooms)
-            {
-                if (room == null)
-                {
-                    continue; //skip where there is no room
-                }
-                Vector2 drawPos = room.gridPos;
-                drawPos.x *= 16;//aspect ratio of map sprite
-                drawPos.y *= 8;
-                //create map obj and assign its variables
-                MapSpriteSelector mapper = Object.Instantiate(roomWhiteObj, drawPos, Quaternion.identity).GetComponent<MapSpriteSelector>();
-                mapper.type = room.type;
-                mapper.up = room.doorTop;
-                mapper.down = room.doorBot;
-                mapper.right = room.doorRight;
-                mapper.left = room.doorLeft;
-                mapper.gameObject.transform.parent = mapRoot;
-            }
-        }*/
         void SetRoomDoors()
         {
             for (int x = 0; x < ((gridSizeX * 2)); x++)
