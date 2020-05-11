@@ -17,7 +17,7 @@ namespace CultEscapeNew
         Vector2 worldSize = new Vector2(4, 4);
         public Room[,] rooms;
         List<Vector2> takenPositions = new List<Vector2>();
-        int gridSizeX, gridSizeY, numberOfRooms = 5;
+        int gridSizeX, gridSizeY, numberOfRooms = 2;
         //public GameObject roomWhiteObj;
         //public Transform mapRoot;
 

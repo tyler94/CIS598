@@ -563,6 +563,7 @@ namespace CultEscapeNew
                 spriteBatch.DrawString(gameFont, "CONGRATULATIONS!", new Vector2(320, 180), Color.SpringGreen);
                 spriteBatch.DrawString(gameFont, "You banished the disgruntled spirits!", new Vector2(270, 205), Color.MediumPurple);
                 spriteBatch.DrawString(gameFont, "Press 'R' to Reset or 'Q' to quit", new Vector2(295, 230), Color.MediumPurple);
+                spriteBatch.DrawString(gameFont, "Game by Tyler Smith with advising from Nathan Bean", new Vector2(220, 420), Color.SpringGreen);
                 spriteBatch.End();
             }
             else
